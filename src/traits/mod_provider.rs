@@ -26,6 +26,7 @@ pub trait ModProvider: Send + Sync {
     async fn discover(&self, query: &DiscoveryQuery) -> Result<DiscoveryResult, DiscoveryError>;
 
     #[deprecated(since = "0.1.0", note = "Use `discover` instead")]
+    #[allow(unused_variables)]
     async fn discover_mods(&self, game_id: String) -> Vec<ModSummary> {
         panic!("Do not use deprecated discover_mod function")
     }
