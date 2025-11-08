@@ -1,6 +1,12 @@
 [package]
 name = "lib-vmm"
+authors = ["Ghoul"]
 version = "0.1.0"
 edition = "2024"
+description = "A library for working with Void mod manager and making plugins for it."
+repository = "https://github.com/void-mod-manager/lib-vmm"
 
 [dependencies]
+async-trait = "0.1.89"
+serde = { version = "1.0.228", features = ["derive"] }
+thiserror = "2.0.17"
