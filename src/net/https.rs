@@ -21,12 +21,24 @@ pub enum HttpError {
 #[async_trait]
 pub trait ProviderHttpClient: Send + Sync {
     async fn get_json(&self, url: &str) -> Result<Value, HttpError>;
+}
 
+/// Extension trait providing typed deserialization
+/// Its like this so ProviderHttpClient is dyn compatible
+#[async_trait]
+pub trait ProviderHttpClientTypedExt {
+    async fn get_typed<T: DeserializeOwned>(&self, url: &str) -> Result<T, HttpError>;
+}
+
+#[async_trait]
+impl<C: ProviderHttpClient + ?Sized> ProviderHttpClientTypedExt for C {
     async fn get_typed<T: DeserializeOwned>(&self, url: &str) -> Result<T, HttpError> {
         let v = self.get_json(url).await?;
         serde_json::from_value(v).map_err(|e| HttpError::Parse(e.to_string()))
     }
 }
+
+
 
 /// This should also be behind the defualt implementation flag
 pub struct ReqwestProviderHttpClient {
