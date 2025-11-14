@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use async_trait::async_trait;
 
-use crate::{registry::model::ProviderSource, traits::{discovery::{DiscoveryError, DiscoveryMeta, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary, PaginationMeta, Tag}, game_provider::{GameIcon, GameMetadata, GameProvider}, mod_provider::{ModDownloadResult, ModProvider, ModProviderFeatures}}};
+use crate::{registry::model::ProviderSource, traits::{discovery::{DiscoveryError, DiscoveryMeta, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary, PaginationMeta, Tag}, game_provider::{GameIcon, GameInstallError, GameMetadata, GameProvider}, mod_provider::{ModDownloadResult, ModProvider, ModProviderFeatures}}};
 
 pub struct DummyModProvider {
     id: String,
@@ -95,5 +95,5 @@ impl GameProvider for DummyGameProvider {
         }
     }
     fn get_external_id(&self) -> &str { "external-123" }
-    fn install_mod(&self, _path: &PathBuf) -> Result<(), ()> { Ok(()) }
+    fn install_mod(&self, _path: &PathBuf) -> Result<(), GameInstallError> { Ok(()) }
 }
