@@ -5,6 +5,8 @@
 > [!WARNING]
 > This project is currently under active development. Expect frequent changes and updates.
 
+> lib-vmm (this package) is not associated with the [libvmm](https://github.com/libvmm/libvmm) package, the naming just happened to be a poor coincidence. We're sorry for any confusion in advanced, please make sure you double read your cargo.toml or install commands!
+
 ## Overview
 
 Lib-vmm simplifies the creation of plugins for Void Mod Manager, specifically **Game Providers** and **Mod Providers**.
