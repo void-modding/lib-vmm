@@ -53,6 +53,7 @@ pub struct DiscoveryMeta {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct DiscoveryResult {
     pub meta: DiscoveryMeta,
     pub mods: Vec<ModSummary>,
@@ -74,6 +75,7 @@ pub struct ModSummary {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct ModExtendedMetadata {
     pub header_image: String,
     pub carousel_images: Vec<String>,
