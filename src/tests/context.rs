@@ -5,8 +5,8 @@ use crate::{registry::{RegistryError, model::ProviderSource}, runtime::context::
 #[test]
 fn register_and_freeze() {
     let mut b = ContextBuilder::new();
-    b.register_mod_provider("mod:provider", Arc::new(DummyModProvider::new("mod:provider")), ProviderSource::Plugin("plug-a".into())).unwrap();
-    b.register_mod_provider("core:base", Arc::new(DummyModProvider::new("core:base")), ProviderSource::Core).unwrap();
+    b.register_mod_provider("mod:provider", DummyModProvider::new("mod:provider"), ProviderSource::Plugin("plug-a".into())).unwrap();
+    b.register_mod_provider("core:base", DummyModProvider::new("core:base"), ProviderSource::Core).unwrap();
 
     let gp = Arc::new(DummyGameProvider::new("game-x", "mod:provider"));
     b.register_game_provider(gp, ProviderSource::Plugin("plug-a".into())).unwrap();
@@ -19,7 +19,7 @@ fn register_and_freeze() {
 #[test]
 fn reserved_core_id_error() {
     let mut b = ContextBuilder::new();
-    let err = b.register_mod_provider("core:evil", Arc::new(DummyModProvider::new("core:evil")), ProviderSource::Plugin("plug".into())).unwrap_err();
+    let err = b.register_mod_provider("core:evil", DummyModProvider::new("core:evil"), ProviderSource::Plugin("plug".into())).unwrap_err();
     assert!(matches!(err, RegistryError::ReservedCoreId(_)))
 }
 
@@ -34,7 +34,7 @@ fn missing_dependency_game_registration() {
 #[test]
 fn activation_and_active_provider() {
     let mut b = ContextBuilder::new();
-    b.register_mod_provider("mod:p", Arc::new(DummyModProvider::new("mod:p")), ProviderSource::Plugin("p1".into())).unwrap();
+    b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("p1".into())).unwrap();
     let gp = Arc::new(DummyGameProvider::new("game-z", "mod:p"));
     b.register_game_provider(gp, ProviderSource::Plugin("p1".into())).unwrap();
     let ctx = b.freeze();
@@ -49,7 +49,7 @@ fn activation_and_active_provider() {
 #[tokio::test]
 async fn extended_info_error_without_active_game() {
     let mut b = ContextBuilder::new();
-    b.register_mod_provider("mod:p", Arc::new(DummyModProvider::new("mod:p")), ProviderSource::Plugin("plug".into())).unwrap();
+    b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("plug".into())).unwrap();
     let gp = Arc::new(DummyGameProvider::new("game-a", "mod:p"));
     b.register_game_provider(gp, ProviderSource::Plugin("plug".into())).unwrap();
     let ctx = b.freeze();
@@ -62,7 +62,7 @@ async fn extended_info_error_without_active_game() {
 #[tokio::test]
 async fn extended_info_success() {
     let mut b = ContextBuilder::new();
-    b.register_mod_provider("mod:p", Arc::new(DummyModProvider::new("mod:p")), ProviderSource::Plugin("plug".into())).unwrap();
+    b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("plug".into())).unwrap();
     let gp = Arc::new(DummyGameProvider::new("game-a", "mod:p"));
     b.register_game_provider(gp, ProviderSource::Plugin("plug".into())).unwrap();
     let ctx = b.freeze();

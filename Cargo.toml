@@ -1,7 +1,7 @@
 [package]
 name = "lib-vmm"
 authors = ["Ghoul"]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Offical SDK for developing plugins for Void Mod Manager (VMM)"
 license = "GPL-3.0-only"
