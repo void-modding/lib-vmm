@@ -4,7 +4,7 @@ use async_trait::async_trait;
 
 use crate::{
     capabilities::{
-        api_key_capability::{ApiKeyValidationError, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::CapabilityBuilder, form::{Field, FieldType, FormSchema}
+        api_key_capability::{ApiKeyValidationError, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::CapabilityBuilder, form::{Field, FieldType, FormSchema}, ids
     },
     registry::model::ProviderSource,
     traits::{
