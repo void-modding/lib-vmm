@@ -16,6 +16,7 @@ macro_rules! define_capabilities {
 
         /// Type-safe identifier for capabilities
         #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+        #[cfg_attr(feature = "specta", derive(specta::Type))]
         #[allow(non_camel_case_types)]
         pub enum CapabilityId {
             $(
