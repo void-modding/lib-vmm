@@ -2,7 +2,7 @@ use std::sync::{Arc, Weak};
 
 use thiserror::Error;
 
-use crate::capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids};
+use crate::{capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids}, capability};
 
 /// What the runtime should do with a successfully provided key.
 pub enum KeyAction {
@@ -58,6 +58,7 @@ impl <T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
 impl <T:RequiresApiKey + Send + Sync + 'static> Capability  for ApiKeyCapability<T> {
     fn id(&self) -> &'static str { ids::REQUIRES_API_KEY }
     fn as_any(&self) -> &dyn std::any::Any { self }
+    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> { Some(self) }
 }
 
 /// Delegate back to underlying behvaior for ergonomics

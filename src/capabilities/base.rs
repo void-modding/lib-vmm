@@ -1,5 +1,7 @@
 use std::{any::Any, sync::Arc};
 
+use crate::capabilities::api_key_capability::RequiresApiKey;
+
 pub trait Capability: Any + Send + Sync {
     /// String discriminator. Prefer lowercase, dot-seperated names
     /// example: `vmm.game.installs_mod_loader`
@@ -7,6 +9,8 @@ pub trait Capability: Any + Send + Sync {
 
     /// Used for typed downcasting helpers.
     fn as_any(&self) -> &dyn Any;
+
+    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> { None }
 }
 
 /// Helper to avoid manual downcast_ref
