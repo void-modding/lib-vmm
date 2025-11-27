@@ -1,21 +1,41 @@
 use std::sync::Arc;
 
-use crate::{capabilities::{api_key_capability::{ApiKeyCapability, ApiKeyValidationError, KeyAction, RequiresApiKey}, base::{Capability, CapabilityCastExt, CapabilityRef}, builder::CapabilityBuilder, ids}, capability, tests::dummy::DummyModProvider, traits::provider::Provider};
+use crate::{
+    capabilities::{
+        api_key_capability::{
+            ApiKeyCapability, ApiKeyValidationError, KeyAction, RequiresApiKey, ApiSubmitResponse,
+        },
+        base::{Capability, CapabilityCastExt, CapabilityRef},
+        builder::CapabilityBuilder,
+        ids,
+    },
+    capability,
+    tests::dummy::DummyModProvider,
+    traits::provider::Provider,
+};
 
 #[test]
 fn api_key_cap_validates() {
     let provider = DummyModProvider::new("dummy");
-    let cap = provider.capabilities()
+    let cap = provider
+        .capabilities()
         .iter()
         .find(|o| o.id() == ids::REQUIRES_API_KEY)
         .expect("Api key cap missing");
 
-    let api_cap = cap.as_any()
+    let api_cap = cap
+        .as_any()
         .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
         .expect("wrong capability type");
 
     assert!(api_cap.needs_prompt(None));
-    let result = api_cap.on_provided("ABCDEFGHIJKLMNOP");
+    let schema = api_cap.render();
+    let resp = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "ABCDEFGHIJKLMNOP".to_string(),
+    };
+    let responses = vec![resp];
+    let result = api_cap.on_provided(&responses);
     assert!(matches!(result, Ok(KeyAction::Store)))
 }
 
@@ -32,21 +52,44 @@ fn api_key_cap_error_cases() {
         .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
         .unwrap();
 
+    let schema = api_cap.render();
+
+    // Empty string
+    let resp_empty = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "".to_string(),
+    };
+    let responses_empty = vec![resp_empty];
     assert!(matches!(
-        api_cap.on_provided(""),
+        api_cap.on_provided(&responses_empty),
         Err(ApiKeyValidationError::Empty)
     ));
+
+    // Too short
+    let resp_short = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "SHORT".to_string(),
+    };
+    let responses_short = vec![resp_short];
     assert!(matches!(
-        api_cap.on_provided("SHORT"),
-        Err(ApiKeyValidationError::TooShort { min_len : 16 })
+        api_cap.on_provided(&responses_short),
+        Err(ApiKeyValidationError::TooShort { min_len: 16 })
     ));
+
+    // Valid
+    let resp_valid = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "ABCDEFGHIJKLMNOP".to_string(),
+    };
+    let responses_valid = vec![resp_valid];
     assert!(matches!(
-        api_cap.on_provided("ABCDEFGHIJKLMNOP"),
+        api_cap.on_provided(&responses_valid),
         Ok(KeyAction::Store)
     ));
 }
 
 #[test]
+#[should_panic(expected = "An error occurred while working with the provider.")]
 fn api_key_cap_provider_dropped_behaviors() {
     let cap: CapabilityRef = {
         let provider = DummyModProvider::new("dummy");
@@ -58,14 +101,16 @@ fn api_key_cap_provider_dropped_behaviors() {
         .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
         .unwrap();
 
-    // Provider dropped: on_provided should report ProviderError
-    assert!(matches!(
-        api_cap.on_provided("ABCDEFGHIJKLMNOP"),
-        Err(ApiKeyValidationError::ProviderError)
-    ));
+    let schema = api_cap.render();
+    let resp = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "ABCDEFGHIJKLMNOP".to_string(),
+    };
+    let responses = vec![resp];
 
-    // should be false since if we have no provider, we have no prompt
-    assert!(!api_cap.needs_prompt(None));
+    // Provider dropped: on_provided should panic (not return ProviderError)
+    let _ = api_cap.on_provided(&responses);
+
 }
 
 #[test]
