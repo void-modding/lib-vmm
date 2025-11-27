@@ -1,10 +1,13 @@
 use std::sync::{Arc, Weak};
 
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids}, capability};
 
 /// What the runtime should do with a successfully provided key.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum KeyAction {
     /// The runtime will store the key for the future.
     Store,
@@ -26,6 +29,8 @@ pub enum ApiKeyValidationError {
     Other(String)
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct ApiSubmitResponse {
     pub id: String,
     pub value: String
