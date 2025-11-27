@@ -15,7 +15,8 @@ pub enum KeyAction {
     DontStore,
 }
 
-#[derive(Debug, Error)]
+#[derive(Error, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum ApiKeyValidationError {
     #[error("API key cannot be empty")]
     Empty,
