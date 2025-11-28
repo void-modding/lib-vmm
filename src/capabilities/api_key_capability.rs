@@ -6,7 +6,7 @@ use thiserror::Error;
 use crate::{capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids}, capability};
 
 /// What the runtime should do with a successfully provided key.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum KeyAction {
     /// The runtime will store the key for the future.
