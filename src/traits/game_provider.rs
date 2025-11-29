@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
@@ -46,5 +46,5 @@ pub trait GameProvider: Provider + Send + Sync {
     fn mod_provider_id(&self) -> &str;
     fn metadata(&self) -> GameMetadata;
     fn get_external_id(&self) -> &str;
-    fn install_mod(&self, path: &PathBuf) -> Result<(), GameInstallError>;
+    fn install_mod(&self, path: &Path) -> Result<(), GameInstallError>;
 }

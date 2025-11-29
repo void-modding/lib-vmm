@@ -5,6 +5,7 @@ use crate::{
         model::{GameEntry, ProviderEntry, ProviderSource}},
     traits::{discovery::ModExtendedMetadata, game_provider::{GameMetadata, GameProvider}, mod_provider::ModProvider}};
 
+#[derive(Default)]
 pub struct ContextBuilder {
     mod_providers: HashMap<String, ProviderEntry>,
     games: HashMap<String, GameEntry>
@@ -82,7 +83,7 @@ impl Context {
         self.mod_providers
             .get(&id)
             .map(|e| Arc::clone(&e.provider))
-            .ok_or_else(|| RegistryError::NotFound(id))
+            .ok_or(RegistryError::NotFound(id))
     }
 
     pub fn get_game_provider(&self, id: &str) -> Result<Arc<dyn GameProvider + 'static>, RegistryError> {
@@ -90,7 +91,7 @@ impl Context {
         self.game_providers
             .get(&id)
             .map(|g| Arc::clone(&g.game) as Arc<dyn GameProvider + 'static>)
-            .ok_or_else(|| RegistryError::NotFound(id))
+            .ok_or( RegistryError::NotFound(id))
     }
 
     pub fn list_mod_providers(&self) -> Vec<(String, ProviderSource)> {

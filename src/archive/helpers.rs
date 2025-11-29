@@ -32,13 +32,12 @@ pub fn inspect_zip(path: &Path) -> Result<ArchiveInfo, ArchiveError> {
         }
 
         if !entry.is_dir() {
-            let path_buf = PathBuf::from(enclosed);
-            if let Some(ext) = path_buf.extension().and_then(|e| e.to_str()) {
+            if let Some(ext) = enclosed.extension().and_then(|e| e.to_str()) {
                 *extension_counts
                     .entry(ext.to_ascii_lowercase())
                     .or_insert(0) += 1;
             }
-            files.push(path_buf);
+            files.push(enclosed);
         }
     }
 

@@ -1,4 +1,4 @@
-use std::{fmt::Debug, path::PathBuf, sync::Arc};
+use std::{fmt::Debug, path::{Path, PathBuf}, sync::Arc};
 
 use async_trait::async_trait;
 
@@ -58,7 +58,7 @@ impl Provider for DummyModProvider {
 }
 
 impl RequiresApiKey for DummyModProvider {
-    fn on_provided(&self, value: &Vec<ApiSubmitResponse>) -> Result<KeyAction, ApiKeyValidationError> {
+    fn on_provided(&self, value: &[ApiSubmitResponse]) -> Result<KeyAction, ApiKeyValidationError> {
         let first = value.first().ok_or(ApiKeyValidationError::Empty)?;
 
         if first.value.trim().is_empty() {
@@ -186,7 +186,7 @@ impl GameProvider for DummyGameProvider {
     fn get_external_id(&self) -> &str {
         "external-123"
     }
-    fn install_mod(&self, _path: &PathBuf) -> Result<(), GameInstallError> {
+    fn install_mod(&self, _path: &Path) -> Result<(), GameInstallError> {
         Ok(())
     }
 }

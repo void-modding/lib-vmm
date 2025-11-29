@@ -41,7 +41,7 @@ pub struct ApiSubmitResponse {
 pub trait RequiresApiKey: Send + Sync {
     /// Called when the user submits a key.
     /// Return Err(message) to indicate validation failure.
-    fn on_provided(&self, values: &Vec<ApiSubmitResponse>) -> Result<KeyAction, ApiKeyValidationError>;
+    fn on_provided(&self, values: &[ApiSubmitResponse]) -> Result<KeyAction, ApiKeyValidationError>;
 
     /// Called when the user explicitly rejects entering a key (e.g. cancels).
     fn on_rejected(&self) {}
@@ -74,7 +74,7 @@ impl <T:RequiresApiKey + Send + Sync + 'static> Capability  for ApiKeyCapability
 
 /// Delegate back to underlying behvaior for ergonomics
 impl <T: RequiresApiKey + Send + Sync + 'static> RequiresApiKey for ApiKeyCapability<T> {
-    fn on_provided(&self, values: &Vec<ApiSubmitResponse>) -> Result<KeyAction, ApiKeyValidationError> {
+    fn on_provided(&self, values: &[ApiSubmitResponse]) -> Result<KeyAction, ApiKeyValidationError> {
         match self.inner() {
             Ok(p) => p.on_provided(values),
             Err(_) => Err(ApiKeyValidationError::ProviderError),
