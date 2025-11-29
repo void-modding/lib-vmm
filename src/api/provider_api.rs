@@ -1,9 +1,11 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use tokio::sync::{watch, OnceCell};
+use tokio::sync::{OnceCell, watch};
 
-use crate::{services::DownloadService, runtime::context::Context, traits::mod_provider::ModDownloadResult};
+use crate::{
+    runtime::context::Context, services::DownloadService, traits::mod_provider::ModDownloadResult,
+};
 
 /// API for interacting with Void Mod Manager
 #[async_trait]
@@ -19,12 +21,15 @@ pub trait ProviderApi: Send + Sync {
 /// This should probably be locked behind `default-services` feature flag, as this isn't required for making plugins
 pub struct DefaultProviderApi {
     download_service: Arc<dyn DownloadService>,
-    context_cell: OnceCell<Arc<Context>>
+    context_cell: OnceCell<Arc<Context>>,
 }
 
 impl DefaultProviderApi {
     pub fn new(download_service: Arc<dyn DownloadService>) -> Self {
-        Self { download_service, context_cell: OnceCell::new() }
+        Self {
+            download_service,
+            context_cell: OnceCell::new(),
+        }
     }
 
     pub fn into_arc(self) -> Arc<dyn ProviderApi> {
@@ -41,7 +46,7 @@ impl ProviderApi for DefaultProviderApi {
     fn context(&self) -> Arc<Context> {
         match self.context_cell.get() {
             Some(ctx) => Arc::clone(ctx),
-            None => panic!("Context not set!")
+            None => panic!("Context not set!"),
         }
     }
 

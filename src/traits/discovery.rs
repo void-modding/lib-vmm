@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-
 /// The supported sort orders of VMM's discovery page
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SortOrder {

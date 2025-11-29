@@ -1,5 +1,5 @@
-mod registry;
-mod dummy;
-mod context;
 mod capabilities;
+mod context;
+mod dummy;
 mod form_schema;
+mod registry;

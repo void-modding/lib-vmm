@@ -56,8 +56,8 @@ fn field_type_text_serialization() {
     let deserialized: FieldType = serde_json::from_str(&json).expect("Should deserialize");
 
     match deserialized {
-        FieldType::Text => {},
-        _ => panic!("Incorrect deserialization")
+        FieldType::Text => {}
+        _ => panic!("Incorrect deserialization"),
     }
 }
 
@@ -68,18 +68,14 @@ fn field_type_password_serialization() {
     let deserialized: FieldType = serde_json::from_str(&json).expect("Should deserialize");
 
     match deserialized {
-        FieldType::Password => {},
+        FieldType::Password => {}
         _ => panic!("Incorrect deserialization"),
     }
 }
 
 #[test]
 fn field_type_select_with_options() {
-    let options = vec![
-        "Red".to_string(),
-        "Green".to_string(),
-        "Blue".to_string(),
-    ];
+    let options = vec!["Red".to_string(), "Green".to_string(), "Blue".to_string()];
     let field_type = FieldType::Select(options.clone());
 
     match field_type {
@@ -88,7 +84,7 @@ fn field_type_select_with_options() {
             assert_eq!(opts[0], "Red");
             assert_eq!(opts[1], "Green");
             assert_eq!(opts[2], "Blue");
-        },
+        }
         _ => panic!("Wrong variant"),
     }
 }
@@ -110,7 +106,7 @@ fn field_type_markdown_info() {
     let deserialized: FieldType = serde_json::from_str(&json).expect("Should deserialize");
 
     match deserialized {
-        FieldType::MarkdownInfo => {},
+        FieldType::MarkdownInfo => {}
         _ => panic!("Incorrect deserialization"),
     }
 }
@@ -183,7 +179,10 @@ fn form_schema_serialization_roundtrip() {
     let deserialized: FormSchema = serde_json::from_str(&json).expect("Should deserialize");
 
     assert_eq!(deserialized.title, "Registration Form");
-    assert_eq!(deserialized.description, Some("Please fill out all fields".to_string()));
+    assert_eq!(
+        deserialized.description,
+        Some("Please fill out all fields".to_string())
+    );
     assert_eq!(deserialized.fields.len(), 2);
     assert_eq!(deserialized.fields[0].id, "name");
     assert_eq!(deserialized.fields[1].id, "password");
@@ -288,7 +287,7 @@ fn field_type_select_large_option_list() {
             assert_eq!(opts.len(), 100);
             assert_eq!(opts[0], "Option 0");
             assert_eq!(opts[99], "Option 99");
-        },
+        }
         _ => panic!("Wrong variant"),
     }
 }
@@ -300,8 +299,12 @@ fn field_with_complex_regex() {
         label: "Complex Validation".to_string(),
         field_type: FieldType::Text,
         placeholder: None,
-        regex: Some(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$".to_string()),
-        help: Some("Password must contain uppercase, lowercase, number, and special character".to_string()),
+        regex: Some(
+            r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$".to_string(),
+        ),
+        help: Some(
+            "Password must contain uppercase, lowercase, number, and special character".to_string(),
+        ),
     };
 
     assert!(field.regex.is_some());

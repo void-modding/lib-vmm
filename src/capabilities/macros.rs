@@ -1,4 +1,3 @@
-
 /// Helper macro for defining capabilities
 #[macro_export]
 macro_rules! define_capabilities {

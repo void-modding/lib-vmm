@@ -2,10 +2,10 @@ use std::path::PathBuf;
 
 use async_trait::async_trait;
 
-use crate::traits::discovery::{DiscoveryError, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary};
+use crate::traits::discovery::{
+    DiscoveryError, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary,
+};
 use crate::traits::provider::Provider;
-
-
 
 /// Note: Currently unimplemented
 #[deprecated(since = "0.2.0", note = "Use capabilities instead")]
@@ -13,7 +13,7 @@ use crate::traits::provider::Provider;
 pub struct ModProviderFeatures {
     pub supports_endorsements: bool,
     pub requires_api_token: bool,
-    pub mod_multi_file: bool
+    pub mod_multi_file: bool,
 }
 
 pub enum ModDownloadResult {
@@ -21,7 +21,7 @@ pub enum ModDownloadResult {
     InProgress(u8),
     Completed(PathBuf),
     Cancelled,
-    CannotComplete(String)
+    CannotComplete(String),
 }
 
 #[async_trait]
@@ -39,7 +39,9 @@ pub trait ModProvider: Provider + Send + Sync {
 
     #[deprecated(since = "0.2.0", note = "Use capabilities instead")]
     #[allow(deprecated)]
-    fn configure(&self) -> &ModProviderFeatures { panic!("DO NOT USE CONFIGURE()") }
+    fn configure(&self) -> &ModProviderFeatures {
+        panic!("DO NOT USE CONFIGURE()")
+    }
 
     fn register(&self) -> String {
         self.id().to_string()

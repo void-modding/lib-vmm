@@ -1,6 +1,6 @@
-use std::path::Path;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
 use crate::{registry::model::ProviderSource, traits::provider::Provider};
 
@@ -19,12 +19,12 @@ pub enum GameInstallError {
     #[error("Filesystem error: {0}")]
     IO(#[from] std::io::Error),
     #[error("Provider error: {message}")]
-    Other{
+    Other {
         /// This message is shown on the frontend, maybe :)
         message: String,
         #[source]
         source: Box<dyn std::error::Error + Send + Sync>,
-    }
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,7 +34,7 @@ pub struct GameMetadata {
     pub display_name: String,
     pub short_name: String,
     pub icon: GameIcon,
-    pub provider_source: ProviderSource
+    pub provider_source: ProviderSource,
 }
 
 #[async_trait]

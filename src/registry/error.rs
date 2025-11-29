@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-
 /// Error types for the registry
 #[derive(Error, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]

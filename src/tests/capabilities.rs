@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::{
     capabilities::{
         api_key_capability::{
-            ApiKeyCapability, ApiKeyValidationError, KeyAction, RequiresApiKey, ApiSubmitResponse,
+            ApiKeyCapability, ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey,
         },
         base::{Capability, CapabilityCastExt, CapabilityRef},
         builder::CapabilityBuilder,
@@ -144,7 +144,6 @@ fn api_key_cap_provider_dropped_behaviors() {
 
     // Provider dropped: on_provided should panic (not return ProviderError)
     let _ = api_cap.on_provided(&responses);
-
 }
 
 #[test]
@@ -161,7 +160,6 @@ fn api_key_cap_provider_dropped_render_errors() {
 
     let res = api_cap.render();
     assert!(res.is_err());
-
 }
 
 #[test]

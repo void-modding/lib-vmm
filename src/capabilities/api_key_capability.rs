@@ -3,7 +3,7 @@ use std::sync::{Arc, Weak};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids}};
+use crate::capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids};
 
 /// What the runtime should do with a successfully provided key.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -27,21 +27,22 @@ pub enum ApiKeyValidationError {
     #[error("An error occured while working with the provider.")]
     ProviderError,
     #[error("{0}")]
-    Other(String)
+    Other(String),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct ApiSubmitResponse {
     pub id: String,
-    pub value: String
+    pub value: String,
 }
 
 /// Behavior-only trait (no Capability)
 pub trait RequiresApiKey: Send + Sync {
     /// Called when the user submits a key.
     /// Return Err(message) to indicate validation failure.
-    fn on_provided(&self, values: &[ApiSubmitResponse]) -> Result<KeyAction, ApiKeyValidationError>;
+    fn on_provided(&self, values: &[ApiSubmitResponse])
+    -> Result<KeyAction, ApiKeyValidationError>;
 
     /// Called when the user explicitly rejects entering a key (e.g. cancels).
     fn on_rejected(&self) {}
@@ -56,13 +57,15 @@ pub trait RequiresApiKey: Send + Sync {
 /// Wrapper giving this behavior a concrete Capability
 pub struct ApiKeyCapability<T: RequiresApiKey + Send + Sync + 'static>(Weak<T>);
 
-impl <T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
+impl<T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
     /// Creates a new `ApiKeyCapability`, that wraps a given weak refrence
     /// # Parameters
     ///  - `inner`: a `Weak<T>` pointing to the underlying provider implementing `RequiresApiKey`.
     /// # Returns
     /// A new `ApikeyCapability<T>` that delegates to the provided weak refrence.
-    pub fn new(inner: Weak<T>) -> Self { Self(inner) }
+    pub fn new(inner: Weak<T>) -> Self {
+        Self(inner)
+    }
 
     /// Obtain a strong `Arc` refrence to the underlying provider if it still exists.
     /// Returns `Ok(Arc<T>)` with the upgraded strong refrence, or `Err(CapabilityError::ProviderDropped)` if the underlying provider has been dropped.
@@ -78,15 +81,24 @@ impl <T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
     }
 }
 
-impl <T:RequiresApiKey + Send + Sync + 'static> Capability  for ApiKeyCapability<T> {
-    fn id(&self) -> &'static str { ids::REQUIRES_API_KEY }
-    fn as_any(&self) -> &dyn std::any::Any { self }
-    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> { Some(self) }
+impl<T: RequiresApiKey + Send + Sync + 'static> Capability for ApiKeyCapability<T> {
+    fn id(&self) -> &'static str {
+        ids::REQUIRES_API_KEY
+    }
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
+    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> {
+        Some(self)
+    }
 }
 
 /// Delegate back to underlying behvaior for ergonomics
-impl <T: RequiresApiKey + Send + Sync + 'static> RequiresApiKey for ApiKeyCapability<T> {
-    fn on_provided(&self, values: &[ApiSubmitResponse]) -> Result<KeyAction, ApiKeyValidationError> {
+impl<T: RequiresApiKey + Send + Sync + 'static> RequiresApiKey for ApiKeyCapability<T> {
+    fn on_provided(
+        &self,
+        values: &[ApiSubmitResponse],
+    ) -> Result<KeyAction, ApiKeyValidationError> {
         match self.inner() {
             Ok(p) => p.on_provided(values),
             Err(_) => Err(ApiKeyValidationError::ProviderError),

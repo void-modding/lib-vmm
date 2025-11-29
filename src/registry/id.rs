@@ -9,7 +9,10 @@ use crate::registry::RegistryError;
 pub fn normalize_id(raw: &str) -> Result<String, RegistryError> {
     let s = raw.trim().to_lowercase();
     if s.is_empty() || s.len() > 200 {
-        return Err(RegistryError::InvalidId(format!("ID '{}' is invalid.", raw)));
+        return Err(RegistryError::InvalidId(format!(
+            "ID '{}' is invalid.",
+            raw
+        )));
     }
 
     let mut seen_colon = false;
@@ -20,9 +23,10 @@ pub fn normalize_id(raw: &str) -> Result<String, RegistryError> {
                 seen_colon = true;
             }
             _ => {
-                return Err(RegistryError::InvalidId(
-                    format!("ID: '{}' contains invalid character '{}' at position {}", raw, ch, i)
-                ))
+                return Err(RegistryError::InvalidId(format!(
+                    "ID: '{}' contains invalid character '{}' at position {}",
+                    raw, ch, i
+                )));
             }
         }
     }

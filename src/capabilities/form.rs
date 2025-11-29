@@ -1,13 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub enum FieldType {
     Text,
     Password,
     Select(Vec<String>),
-    MarkdownInfo
+    MarkdownInfo,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18,7 +17,7 @@ pub struct Field {
     pub field_type: FieldType,
     pub placeholder: Option<String>,
     pub regex: Option<String>,
-    pub help: Option<String>
+    pub help: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,5 +25,5 @@ pub struct Field {
 pub struct FormSchema {
     pub title: String,
     pub description: Option<String>,
-    pub fields: Vec<Field>
+    pub fields: Vec<Field>,
 }

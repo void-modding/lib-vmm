@@ -1,4 +1,7 @@
-use crate::registry::{RegistryError, id::{is_core_id, normalize_id}};
+use crate::registry::{
+    RegistryError,
+    id::{is_core_id, normalize_id},
+};
 
 #[test]
 fn normalize_basic() {

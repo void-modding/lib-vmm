@@ -10,7 +10,9 @@ pub trait Capability: Any + Send + Sync {
     /// Used for typed downcasting helpers.
     fn as_any(&self) -> &dyn Any;
 
-    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> { None }
+    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> {
+        None
+    }
 }
 
 /// Helper to avoid manual downcast_ref
@@ -29,8 +31,12 @@ impl CapabilityCastExt for dyn Capability {
 macro_rules! capability {
     ($ty:ty, $id:expr) => {
         impl Capability for $ty {
-            fn id(&self) -> &'static str { $id }
-            fn as_any(&self) -> &dyn std::any::Any { self }
+            fn id(&self) -> &'static str {
+                $id
+            }
+            fn as_any(&self) -> &dyn std::any::Any {
+                self
+            }
         }
     };
 }

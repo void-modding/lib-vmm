@@ -1,5 +1,7 @@
-use std::{collections::{HashMap, HashSet}, path::PathBuf};
-
+use std::{
+    collections::{HashMap, HashSet},
+    path::PathBuf,
+};
 
 // TODO - Move to archive/info
 #[derive(Debug, Default)]

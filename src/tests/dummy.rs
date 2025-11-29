@@ -1,10 +1,17 @@
-use std::{fmt::Debug, path::{Path, PathBuf}, sync::Arc};
+use std::{
+    fmt::Debug,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use async_trait::async_trait;
 
 use crate::{
     capabilities::{
-        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::{CapabilityBuilder, CapabilityError}, form::{Field, FieldType, FormSchema}
+        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey},
+        base::CapabilityRef,
+        builder::{CapabilityBuilder, CapabilityError},
+        form::{Field, FieldType, FormSchema},
     },
     registry::model::ProviderSource,
     traits::{
@@ -18,10 +25,9 @@ use crate::{
     },
 };
 
-
 pub struct DummyModProvider {
     id: String,
-    caps: Vec<CapabilityRef>
+    caps: Vec<CapabilityRef>,
 }
 
 impl Debug for DummyModProvider {
@@ -51,10 +57,13 @@ impl DummyModProvider {
     }
 }
 
-
 impl Provider for DummyModProvider {
-    fn id(&self) -> &'static str { "dummyModProvider" }
-    fn capabilities(&self) -> &[CapabilityRef] { &self.caps }
+    fn id(&self) -> &'static str {
+        "dummyModProvider"
+    }
+    fn capabilities(&self) -> &[CapabilityRef] {
+        &self.caps
+    }
 }
 
 impl RequiresApiKey for DummyModProvider {
@@ -62,7 +71,7 @@ impl RequiresApiKey for DummyModProvider {
         let first = value.first().ok_or(ApiKeyValidationError::Empty)?;
 
         if first.value.trim().is_empty() {
-            return Err(ApiKeyValidationError::Empty)
+            return Err(ApiKeyValidationError::Empty);
         }
         if first.value.len() < 16 {
             return Err(ApiKeyValidationError::TooShort { min_len: 16 });
@@ -80,17 +89,20 @@ impl RequiresApiKey for DummyModProvider {
     }
 
     fn render(&self) -> Result<FormSchema, CapabilityError> {
-        Ok(FormSchema { title: "Enter key".into(), description: Some("Description".into()), fields: vec![ Field {
-            id: "api_key".into(),
-            label: "api_key".into(),
-            field_type: FieldType::Password,
-            regex: None,
-            help: None,
-            placeholder: Some("Paste key here".into()),
-        }] })
+        Ok(FormSchema {
+            title: "Enter key".into(),
+            description: Some("Description".into()),
+            fields: vec![Field {
+                id: "api_key".into(),
+                label: "api_key".into(),
+                field_type: FieldType::Password,
+                regex: None,
+                help: None,
+                placeholder: Some("Paste key here".into()),
+            }],
+        })
     }
 }
-
 
 #[async_trait]
 impl ModProvider for DummyModProvider {
@@ -162,8 +174,12 @@ impl DummyGameProvider {
 }
 
 impl Provider for DummyGameProvider {
-    fn id(&self) -> &'static str { "dummy.game" }
-    fn capabilities(&self) -> &[CapabilityRef] { &[] }
+    fn id(&self) -> &'static str {
+        "dummy.game"
+    }
+    fn capabilities(&self) -> &[CapabilityRef] {
+        &[]
+    }
 }
 
 #[async_trait]
@@ -172,7 +188,9 @@ impl GameProvider for DummyGameProvider {
         &self.mod_provider
     }
 
-    fn game_id(&self) -> &str { &self.id }
+    fn game_id(&self) -> &str {
+        &self.id
+    }
 
     fn metadata(&self) -> GameMetadata {
         GameMetadata {
