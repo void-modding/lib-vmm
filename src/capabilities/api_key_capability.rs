@@ -57,10 +57,22 @@ pub trait RequiresApiKey: Send + Sync {
 pub struct ApiKeyCapability<T: RequiresApiKey + Send + Sync + 'static>(Weak<T>);
 
 impl <T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
+    /// Creates a new `ApiKeyCapability`, that wraps a given weak refrence
+    /// # Parameters
+    ///  - `inner`: a `Weak<T>` pointing to the underlying provider implementing `RequiresApiKey`.
+    /// # Returns
+    /// A new `ApikeyCapability<T>` that delegates to the provided weak refrence.
     pub fn new(inner: Weak<T>) -> Self { Self(inner) }
+
+    /// Obtain a strong `Arc` refrence to the underlying provider if it still exists.
+    /// Returns `Ok(Arc<T>)` with the upgraded strong refrence, or `Err(CapabilityError::ProviderDropped)` if the underlying provider has been dropped.
     pub fn inner(&self) -> Result<Arc<T>, CapabilityError> {
         self.upgrade().ok_or(CapabilityError::ProviderDropped)
     }
+
+    /// Attempts to upgrade the stored `Weak<T>` to a strong `Arc<T>`
+    ///
+    /// Returns `Some(Arc<T>)` if the underlying value is still alive, `None` if it has been dropped.
     fn upgrade(&self) -> Option<Arc<T>> {
         self.0.upgrade()
     }
