@@ -89,7 +89,7 @@ fn api_key_cap_error_cases() {
 }
 
 #[test]
-#[should_panic(expected = "An error occurred while working with the provider.")]
+#[should_panic(expected = "form schema should exist: ProviderDropped")]
 fn api_key_cap_provider_dropped_behaviors() {
     let cap: CapabilityRef = {
         let provider = DummyModProvider::new("dummy");
@@ -114,8 +114,7 @@ fn api_key_cap_provider_dropped_behaviors() {
 }
 
 #[test]
-#[should_panic(expected = "An error occurred while working with the provider.")]
-fn api_key_cap_provider_dropped_render_panics() {
+fn api_key_cap_provider_dropped_render_errors() {
     let cap: CapabilityRef = {
         let provider = DummyModProvider::new("dummy");
         provider.capabilities()[0].clone()
@@ -126,7 +125,9 @@ fn api_key_cap_provider_dropped_render_panics() {
         .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
         .unwrap();
 
-    let _ = api_cap.render();
+    let res = api_cap.render();
+    assert!(res.is_err());
+
 }
 
 #[test]

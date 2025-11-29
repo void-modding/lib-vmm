@@ -38,7 +38,7 @@ impl ContextBuilder {
     }
 
     pub fn register_game_provider(&mut self, provider: Arc<dyn GameProvider + Send + Sync>, source: ProviderSource) -> Result<(), RegistryError> {
-        let id = normalize_id(provider.game_id())?;
+        let id = normalize_id(provider.id())?;
         if self.games.contains_key(&id) {
             return Err(RegistryError::GameAlreadyExists(id));
         }

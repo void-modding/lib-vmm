@@ -38,6 +38,7 @@ pub trait ModProvider: Provider + Send + Sync {
     async fn get_extended_mod(&self, mod_id: &str) -> ModExtendedMetadata;
 
     #[deprecated(since = "0.2.0", note = "Use capabilities instead")]
+    #[allow(deprecated)]
     fn configure(&self) -> &ModProviderFeatures { panic!("DO NOT USE CONFIGURE()") }
 
     fn register(&self) -> String {

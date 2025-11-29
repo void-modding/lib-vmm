@@ -3,7 +3,7 @@ use std::sync::{Arc, Weak};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids}, capability};
+use crate::{capabilities::{base::Capability, builder::CapabilityError, form::FormSchema, ids}};
 
 /// What the runtime should do with a successfully provided key.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]

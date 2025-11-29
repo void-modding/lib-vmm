@@ -4,7 +4,7 @@ use async_trait::async_trait;
 
 use crate::{
     capabilities::{
-        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::{CapabilityBuilder, CapabilityError}, form::{Field, FieldType, FormSchema}, ids
+        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::{CapabilityBuilder, CapabilityError}, form::{Field, FieldType, FormSchema}
     },
     registry::model::ProviderSource,
     traits::{
@@ -13,7 +13,7 @@ use crate::{
             ModSummary, PaginationMeta, Tag,
         },
         game_provider::{GameIcon, GameInstallError, GameMetadata, GameProvider},
-        mod_provider::{ModDownloadResult, ModProvider, ModProviderFeatures},
+        mod_provider::{ModDownloadResult, ModProvider},
         provider::Provider,
     },
 };
@@ -21,7 +21,6 @@ use crate::{
 
 pub struct DummyModProvider {
     id: String,
-    features: ModProviderFeatures,
     caps: Vec<CapabilityRef>
 }
 
@@ -29,7 +28,6 @@ impl Debug for DummyModProvider {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("DummyModProvider")
             .field("id", &self.id)
-            .field("features", &self.features)
             .finish()
     }
 }
@@ -43,7 +41,6 @@ impl DummyModProvider {
 
             DummyModProvider {
                 id: id.to_string(),
-                features: ModProviderFeatures::default(),
                 caps,
             }
         })
@@ -52,15 +49,11 @@ impl DummyModProvider {
     pub fn id_str(&self) -> &str {
         &self.id
     }
-
-    pub fn features(&self) -> &ModProviderFeatures {
-        &self.features
-    }
 }
 
 
 impl Provider for DummyModProvider {
-    fn id(&self) -> &'static str { "a" }
+    fn id(&self) -> &'static str { "dummyModProvider" }
     fn capabilities(&self) -> &[CapabilityRef] { &self.caps }
 }
 
@@ -151,10 +144,6 @@ impl ModProvider for DummyModProvider {
             installed: mod_id == "installed-mod",
             description: format!("Extended meta for {}", mod_id),
         }
-    }
-
-    fn configure(&self) -> &ModProviderFeatures {
-        self.features()
     }
 }
 

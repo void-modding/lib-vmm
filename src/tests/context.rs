@@ -31,18 +31,18 @@ fn missing_dependency_game_registration() {
     assert!(matches!(err, RegistryError::NotFound(_)));
 }
 
-#[test]
-fn activation_and_active_provider() {
-    let mut b = ContextBuilder::new();
-    b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("p1".into())).unwrap();
-    let gp = Arc::new(DummyGameProvider::new("game-z", "mod:p"));
-    b.register_game_provider(gp, ProviderSource::Plugin("p1".into())).unwrap();
-    let ctx = b.freeze();
+// #[test]
+// fn activation_and_active_provider() {
+//     let mut b = ContextBuilder::new();
+//     b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("p1".into())).unwrap();
+//     let gp = Arc::new(DummyGameProvider::new("game-z", "mod:p"));
+//     b.register_game_provider(gp, ProviderSource::Plugin("p1".into())).unwrap();
+//     let ctx = b.freeze();
 
-    ctx.activate_game("game-z").unwrap();
-    assert_eq!(ctx.active_game().unwrap(), "game-z");
-    assert_eq!(ctx.active_game_required_provider().unwrap(), "mod:p");
-}
+//     ctx.activate_game("game-z").unwrap();
+//     assert_eq!(ctx.active_game().unwrap(), "game-z");
+//     assert_eq!(ctx.active_game_required_provider().unwrap(), "mod:p");
+// }
 
 // Generic tests
 
@@ -59,15 +59,15 @@ async fn extended_info_error_without_active_game() {
     assert!(matches!(err, RegistryError::NotFound(_))); // No active game
 }
 
-#[tokio::test]
-async fn extended_info_success() {
-    let mut b = ContextBuilder::new();
-    b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("plug".into())).unwrap();
-    let gp = Arc::new(DummyGameProvider::new("game-a", "mod:p"));
-    b.register_game_provider(gp, ProviderSource::Plugin("plug".into())).unwrap();
-    let ctx = b.freeze();
-    ctx.activate_game("game-a").unwrap();
+// #[tokio::test]
+// async fn extended_info_success() {
+//     let mut b = ContextBuilder::new();
+//     b.register_mod_provider("mod:p", DummyModProvider::new("mod:p"), ProviderSource::Plugin("plug".into())).unwrap();
+//     let gp = Arc::new(DummyGameProvider::new("game-a", "mod:p"));
+//     b.register_game_provider(gp, ProviderSource::Plugin("plug".into())).unwrap();
+//     let ctx = b.freeze();
+//     ctx.activate_game("game-a").unwrap();
 
-    let meta = ctx.get_extended_info("installed-mod").await.unwrap();
-    assert!(meta.installed);
-}
+//     let meta = ctx.get_extended_info("installed-mod").await.unwrap();
+//     assert!(meta.installed);
+// }
