@@ -39,6 +39,17 @@ pub struct GameMetadata {
 
 #[async_trait]
 pub trait GameProvider: Provider + Send + Sync {
+    /// Legacy accessor for the provider identifier. Deprecated — use `id()` instead.
+    ///
+    /// # Returns
+    ///
+    /// The provider's identifier string.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let id = provider.game_id();
+    /// ```
     #[deprecated(since = "0.2.0", note = "Use id() instead")]
     fn game_id(&self) -> &str {
         self.id()

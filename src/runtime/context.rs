@@ -18,6 +18,34 @@ impl ContextBuilder {
         }
     }
 
+    /// Registers a mod provider under a canonicalised identifier.
+    ///
+    /// Normalises `id` before insertion. Registration fails if the canonicalised id
+    /// begins with `core:` while `source` is not `ProviderSource::Core`, or if a
+    /// provider with the same canonical id already exists.
+    ///
+    /// # Parameters
+    ///
+    /// - `id`: Identifier to register; it will be canonicalised using `normalize_id`.
+    /// - `source`: The origin of the provider; `core:` ids are reserved for
+    ///   `ProviderSource::Core`.
+    ///
+    /// # Returns
+    ///
+    /// `Ok(())` on success. Returns `Err(RegistryError::ReservedCoreId(id))` if the
+    /// canonical id starts with `core:` and `source` is not `Core`, or
+    /// `Err(RegistryError::ProviderAlreadyExists(id))` if a provider with the same
+    /// canonical id is already registered. Errors from `normalize_id` are propagated.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use std::sync::Arc;
+    ///
+    /// let mut builder = ContextBuilder::new();
+    /// let provider = Arc::new(MyModProvider::new());
+    /// builder.register_mod_provider("example:provider", provider, ProviderSource::External).unwrap();
+    /// ```
     pub fn register_mod_provider(&mut self, id: &str, provider: Arc<dyn ModProvider + Send + Sync>, source: ProviderSource) -> Result<(), RegistryError> {
         let id = normalize_id(id)?;
         if id.starts_with("core:") && !matches!(source, ProviderSource::Core) {
@@ -37,6 +65,22 @@ impl ContextBuilder {
         Ok(())
     }
 
+    /// Registers a game provider using the provider's normalised `id()` as the game's identifier.
+    ///
+    /// The provider's `id()` is normalised and used as the stored game id. The provider's `mod_provider_id()` is normalised and must refer to an already-registered mod provider. The function inserts a new `GameEntry` linking the game to its required mod provider.
+    ///
+    /// # Errors
+    ///
+    /// Returns `RegistryError::GameAlreadyExists(id)` if a game with the same id is already registered.
+    /// Returns `RegistryError::NotFound(depends_on)` if the required mod provider is not registered.
+    /// Propagates any `RegistryError` returned by the id normalisation step.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let provider: Arc<dyn GameProvider + Send + Sync> = Arc::new(MyGameProvider::new(...));
+    /// builder.register_game_provider(provider, ProviderSource::External).unwrap();
+    /// ```
     pub fn register_game_provider(&mut self, provider: Arc<dyn GameProvider + Send + Sync>, source: ProviderSource) -> Result<(), RegistryError> {
         let id = normalize_id(provider.id())?;
         if self.games.contains_key(&id) {

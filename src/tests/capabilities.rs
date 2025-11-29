@@ -88,6 +88,10 @@ fn api_key_cap_error_cases() {
     ));
 }
 
+/// Verifies that an `ApiKeyCapability` panics when its provider has been dropped after rendering.
+///
+/// Creates a capability whose provider is dropped, renders a form schema while the provider is still alive,
+/// submits a valid API key response and asserts that `on_provided` panics with `ProviderDropped`.
 #[test]
 #[should_panic(expected = "form schema should exist: ProviderDropped")]
 fn api_key_cap_provider_dropped_behaviors() {
@@ -113,6 +117,28 @@ fn api_key_cap_provider_dropped_behaviors() {
 
 }
 
+/// Ensures rendering an API-key capability fails once its provider has been dropped.
+///
+/// This test verifies that calling `render()` on an `ApiKeyCapability` obtained from a
+/// provider that has gone out of scope returns an error.
+///
+/// # Examples
+///
+/// ```
+/// use std::sync::Arc;
+/// // create a provider and take a cloned capability reference, then drop the provider
+/// let cap: crate::capabilities::CapabilityRef = {
+///     let provider = crate::tests::DummyModProvider::new("dummy");
+///     provider.capabilities()[0].clone()
+/// };
+///
+/// let api_cap = cap
+///     .as_any()
+///     .downcast_ref::<crate::capabilities::ApiKeyCapability<crate::tests::DummyModProvider>>()
+///     .unwrap();
+///
+/// assert!(api_cap.render().is_err());
+/// ```
 #[test]
 fn api_key_cap_provider_dropped_render_errors() {
     let cap: CapabilityRef = {
