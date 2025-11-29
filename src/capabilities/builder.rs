@@ -7,7 +7,7 @@ use crate::capabilities::{api_key_capability::{ApiKeyCapability, RequiresApiKey}
 
 #[derive(Error, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CapabilityError {
-    #[error("The provided was dropped before the refrence could be upgraded.")]
+    #[error("The provider was dropped before the refrence could be upgraded.")]
     ProviderDropped
 }
 

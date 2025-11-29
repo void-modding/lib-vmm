@@ -4,7 +4,7 @@ use async_trait::async_trait;
 
 use crate::{
     capabilities::{
-        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::CapabilityBuilder, form::{Field, FieldType, FormSchema}, ids
+        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey}, base::CapabilityRef, builder::{CapabilityBuilder, CapabilityError}, form::{Field, FieldType, FormSchema}, ids
     },
     registry::model::ProviderSource,
     traits::{
@@ -66,10 +66,12 @@ impl Provider for DummyModProvider {
 
 impl RequiresApiKey for DummyModProvider {
     fn on_provided(&self, value: &Vec<ApiSubmitResponse>) -> Result<KeyAction, ApiKeyValidationError> {
-        if value[0].value.trim().is_empty() {
+        let first = value.first().ok_or(ApiKeyValidationError::Empty)?;
+
+        if first.value.trim().is_empty() {
             return Err(ApiKeyValidationError::Empty)
         }
-        if value[0].value.len() < 16 {
+        if first.value.len() < 16 {
             return Err(ApiKeyValidationError::TooShort { min_len: 16 });
         }
 
@@ -84,15 +86,15 @@ impl RequiresApiKey for DummyModProvider {
         }
     }
 
-    fn render(&self) -> FormSchema {
-        FormSchema { title: "Enter key".into(), description: Some("Description".into()), fields: vec![ Field {
+    fn render(&self) -> Result<FormSchema, CapabilityError> {
+        Ok(FormSchema { title: "Enter key".into(), description: Some("Description".into()), fields: vec![ Field {
             id: "api_key".into(),
             label: "api_key".into(),
-            field_type: Some(FieldType::Password),
+            field_type: FieldType::Password,
             regex: None,
             help: None,
             placeholder: Some("Paste key here".into()),
-        }] }
+        }] })
     }
 }
 

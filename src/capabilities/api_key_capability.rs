@@ -50,7 +50,7 @@ pub trait RequiresApiKey: Send + Sync {
     fn needs_prompt(&self, existing_key: Option<&str>) -> bool;
 
     /// Returns the form schema used to render the API key collection UI.
-    fn render(&self) -> FormSchema;
+    fn render(&self) -> Result<FormSchema, CapabilityError>;
 }
 
 /// Wrapper giving this behavior a concrete Capability
@@ -91,10 +91,10 @@ impl <T: RequiresApiKey + Send + Sync + 'static> RequiresApiKey for ApiKeyCapabi
             Err(_) => false,
         }
     }
-    fn render(&self) -> FormSchema {
+    fn render(&self) -> Result<FormSchema, CapabilityError> {
         match self.inner() {
             Ok(p) => p.render(),
-            Err(_) => panic!("An error occurred while working with the provider."),
+            Err(e) => Err(e),
         }
     }
 }

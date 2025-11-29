@@ -15,7 +15,7 @@ pub enum FieldType {
 pub struct Field {
     pub id: String,
     pub label: String,
-    pub field_type: Option<FieldType>,
+    pub field_type: FieldType,
     pub placeholder: Option<String>,
     pub regex: Option<String>,
     pub help: Option<String>

@@ -29,7 +29,7 @@ fn api_key_cap_validates() {
         .expect("wrong capability type");
 
     assert!(api_cap.needs_prompt(None));
-    let schema = api_cap.render();
+    let schema = api_cap.render().expect("form schema should exist");
     let resp = ApiSubmitResponse {
         id: schema.fields[0].id.clone(),
         value: "ABCDEFGHIJKLMNOP".to_string(),
@@ -52,7 +52,7 @@ fn api_key_cap_error_cases() {
         .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
         .unwrap();
 
-    let schema = api_cap.render();
+    let schema = api_cap.render().expect("form schema should exist");
 
     // Empty string
     let resp_empty = ApiSubmitResponse {
@@ -101,7 +101,7 @@ fn api_key_cap_provider_dropped_behaviors() {
         .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
         .unwrap();
 
-    let schema = api_cap.render();
+    let schema = api_cap.render().expect("form schema should exist");
     let resp = ApiSubmitResponse {
         id: schema.fields[0].id.clone(),
         value: "ABCDEFGHIJKLMNOP".to_string(),
