@@ -15,6 +15,40 @@ use crate::{
 };
 
 #[test]
+fn api_key_validation_whitespace_handling() {
+    let provider = DummyModProvider::new("whitespace-test");
+    let cap = provider
+        .capabilities()
+        .iter()
+        .find(|o| o.id() == ids::REQUIRES_API_KEY)
+        .unwrap();
+    let api_cap = cap
+        .as_any()
+        .downcast_ref::<ApiKeyCapability<DummyModProvider>>()
+        .unwrap();
+
+    let schema = api_cap.render().unwrap();
+
+    // Whitespace only
+    let resp_ws = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "    \t\n    ".to_string(),
+    };
+    assert!(matches!(
+        api_cap.on_provided(&vec![resp_ws]),
+        Err(ApiKeyValidationError::Empty)
+    ));
+
+    let resp_padded = ApiSubmitResponse {
+        id: schema.fields[0].id.clone(),
+        value: "     ABCDEFGHIJKLMNOP   ".to_string(),
+    };
+
+    let result = api_cap.on_provided(&vec![resp_padded]);
+    assert!(result.is_ok());
+}
+
+#[test]
 fn api_key_cap_validates() {
     let provider = DummyModProvider::new("dummy");
     let cap = provider
