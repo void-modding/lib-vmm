@@ -2,7 +2,6 @@ use std::path::PathBuf;
 
 use thiserror::Error;
 
-
 #[derive(Debug, Error)]
 pub enum ArchiveError {
     #[error("failed to open archive {path}: {source}")]

@@ -1,24 +1,15 @@
-use std::{collections::{HashMap, HashSet}, path::PathBuf};
-
+use std::{
+    collections::{HashMap, HashSet},
+    path::PathBuf,
+};
 
 // TODO - Move to archive/info
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ArchiveInfo {
     pub files: Vec<PathBuf>,
     pub top_level_dirs: HashSet<PathBuf>,
     pub file_counts_by_extension: HashMap<String, usize>,
     pub total_files: usize, // count of non-directory entries
-}
-
-impl Default for ArchiveInfo {
-    fn default() -> Self {
-        Self {
-            files: Vec::new(),
-            top_level_dirs: HashSet::new(),
-            file_counts_by_extension: HashMap::new(),
-            total_files: 0,
-        }
-    }
 }
 
 impl ArchiveInfo {

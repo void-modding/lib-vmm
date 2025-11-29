@@ -15,7 +15,7 @@ pub enum HttpError {
     #[error("schema mismatch: {0}")]
     Schema(String),
     #[error("internal error: {0}")]
-    Internal(String)
+    Internal(String),
 }
 
 #[async_trait]
@@ -38,15 +38,13 @@ impl<C: ProviderHttpClient + ?Sized> ProviderHttpClientTypedExt for C {
     }
 }
 
-
-
 /// This should also be behind the defualt implementation flag
 pub struct ReqwestProviderHttpClient {
     client: reqwest::Client,
 }
 
 impl ReqwestProviderHttpClient {
-    pub fn new () -> Arc<Self> {
+    pub fn new() -> Arc<Self> {
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(30))
             .build()
@@ -58,19 +56,29 @@ impl ReqwestProviderHttpClient {
 #[async_trait]
 impl ProviderHttpClient for ReqwestProviderHttpClient {
     async fn get_json(&self, url: &str) -> Result<Value, HttpError> {
-        let resp = self.client
+        let resp = self
+            .client
             .get(url)
-            .header(USER_AGENT, "VoidModManager/0.1.0 (+https://github.com/void-mod-manager/app)")
+            .header(
+                USER_AGENT,
+                "VoidModManager/0.1.0 (+https://github.com/void-mod-manager/app)",
+            )
             .header(CONTENT_TYPE, "application/json")
             .send()
             .await
             .map_err(|e| HttpError::Network(e.to_string()))?;
 
         let status = resp.status();
-        let text = resp.text().await.map_err(|e| HttpError::Network(e.to_string()))?;
+        let text = resp
+            .text()
+            .await
+            .map_err(|e| HttpError::Network(e.to_string()))?;
 
         if !status.is_success() {
-            return Err(HttpError::Network(format!("status {} | body = {}", status, text)));
+            return Err(HttpError::Network(format!(
+                "status {} | body = {}",
+                status, text
+            )));
         }
 
         serde_json::from_str(&text).map_err(|e| HttpError::Parse(e.to_string()))

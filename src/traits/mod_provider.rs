@@ -2,15 +2,18 @@ use std::path::PathBuf;
 
 use async_trait::async_trait;
 
-use crate::traits::discovery::{DiscoveryError, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary};
-
+use crate::traits::discovery::{
+    DiscoveryError, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary,
+};
+use crate::traits::provider::Provider;
 
 /// Note: Currently unimplemented
+#[deprecated(since = "0.2.0", note = "Use capabilities instead")]
 #[derive(Default, Debug)]
 pub struct ModProviderFeatures {
     pub supports_endorsements: bool,
     pub requires_api_token: bool,
-    pub mod_multi_file: bool
+    pub mod_multi_file: bool,
 }
 
 pub enum ModDownloadResult {
@@ -18,11 +21,11 @@ pub enum ModDownloadResult {
     InProgress(u8),
     Completed(PathBuf),
     Cancelled,
-    CannotComplete(String)
+    CannotComplete(String),
 }
 
 #[async_trait]
-pub trait ModProvider: Send + Sync {
+pub trait ModProvider: Provider + Send + Sync {
     async fn download_mod(&self, mod_id: String) -> ModDownloadResult;
     async fn discover(&self, query: &DiscoveryQuery) -> Result<DiscoveryResult, DiscoveryError>;
 
@@ -33,9 +36,14 @@ pub trait ModProvider: Send + Sync {
     }
 
     async fn get_extended_mod(&self, mod_id: &str) -> ModExtendedMetadata;
-    fn configure(&self) -> &ModProviderFeatures;
+
+    #[deprecated(since = "0.2.0", note = "Use capabilities instead")]
+    #[allow(deprecated)]
+    fn configure(&self) -> &ModProviderFeatures {
+        panic!("DO NOT USE CONFIGURE()")
+    }
 
     fn register(&self) -> String {
-        todo!("Return provider ID");
+        self.id().to_string()
     }
 }

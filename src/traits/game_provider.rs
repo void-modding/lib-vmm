@@ -1,8 +1,8 @@
-use std::path::PathBuf;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 
-use crate::registry::model::ProviderSource;
+use crate::{registry::model::ProviderSource, traits::provider::Provider};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
@@ -19,12 +19,12 @@ pub enum GameInstallError {
     #[error("Filesystem error: {0}")]
     IO(#[from] std::io::Error),
     #[error("Provider error: {message}")]
-    Other{
+    Other {
         /// This message is shown on the frontend, maybe :)
         message: String,
         #[source]
         source: Box<dyn std::error::Error + Send + Sync>,
-    }
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,14 +34,17 @@ pub struct GameMetadata {
     pub display_name: String,
     pub short_name: String,
     pub icon: GameIcon,
-    pub provider_source: ProviderSource
+    pub provider_source: ProviderSource,
 }
 
 #[async_trait]
-pub trait GameProvider: Send + Sync {
-    fn game_id(&self) -> &str;
+pub trait GameProvider: Provider + Send + Sync {
+    #[deprecated(since = "0.2.0", note = "Use id() instead")]
+    fn game_id(&self) -> &str {
+        self.id()
+    }
     fn mod_provider_id(&self) -> &str;
     fn metadata(&self) -> GameMetadata;
     fn get_external_id(&self) -> &str;
-    fn install_mod(&self, path: &PathBuf) -> Result<(), GameInstallError>;
+    fn install_mod(&self, path: &Path) -> Result<(), GameInstallError>;
 }

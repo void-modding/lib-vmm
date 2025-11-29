@@ -21,5 +21,5 @@ pub struct GameEntry {
     pub id: String,
     pub source: ProviderSource,
     pub game: Arc<dyn GameProvider + Send + Sync>,
-    pub required_provider_id: String
+    pub required_provider_id: String,
 }

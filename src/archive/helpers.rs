@@ -1,6 +1,10 @@
-use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::{Path, PathBuf}};
-use zip::ZipArchive;
 use crate::archive::{ArchiveError, ArchiveInfo};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::{self, File},
+    path::{Path, PathBuf},
+};
+use zip::ZipArchive;
 
 /// Helper function for inspecting zips
 pub fn inspect_zip(path: &Path) -> Result<ArchiveInfo, ArchiveError> {
@@ -19,9 +23,9 @@ pub fn inspect_zip(path: &Path) -> Result<ArchiveInfo, ArchiveError> {
     let mut extension_counts: HashMap<String, usize> = HashMap::new();
 
     for i in 0..zip.len() {
-        let entry =
-            zip.by_index(i)
-                .map_err(|source| ArchiveError::EntryAccess { index: i, source })?;
+        let entry = zip
+            .by_index(i)
+            .map_err(|source| ArchiveError::EntryAccess { index: i, source })?;
 
         let enclosed = entry
             .enclosed_name()
@@ -32,13 +36,12 @@ pub fn inspect_zip(path: &Path) -> Result<ArchiveInfo, ArchiveError> {
         }
 
         if !entry.is_dir() {
-            let path_buf = PathBuf::from(enclosed);
-            if let Some(ext) = path_buf.extension().and_then(|e| e.to_str()) {
+            if let Some(ext) = enclosed.extension().and_then(|e| e.to_str()) {
                 *extension_counts
                     .entry(ext.to_ascii_lowercase())
                     .or_insert(0) += 1;
             }
-            files.push(path_buf);
+            files.push(enclosed);
         }
     }
 
@@ -65,16 +68,15 @@ pub fn extract_zip(path: &Path, dest: &Path) -> Result<ArchiveInfo, ArchiveError
     let mut info = ArchiveInfo::default();
 
     for i in 0..zip.len() {
-        let mut entry =
-            zip.by_index(i)
-                .map_err(|source| ArchiveError::EntryAccess { index: i, source })?;
+        let mut entry = zip
+            .by_index(i)
+            .map_err(|source| ArchiveError::EntryAccess { index: i, source })?;
         let enclosed = entry
             .enclosed_name()
             .ok_or(ArchiveError::InvalidEntryName { index: i })?;
 
         if let Some(first) = enclosed.components().next() {
-            info.top_level_dirs
-                .insert(PathBuf::from(first.as_os_str()));
+            info.top_level_dirs.insert(PathBuf::from(first.as_os_str()));
         }
 
         let out_path = dest.join(enclosed);
@@ -108,19 +110,21 @@ pub fn extract_zip(path: &Path, dest: &Path) -> Result<ArchiveInfo, ArchiveError
         #[cfg(unix)]
         if let Some(mode) = entry.unix_mode() {
             use std::os::unix::fs::PermissionsExt;
-            fs::set_permissions(&out_path, fs::Permissions::from_mode(mode)).map_err(
-                |source| ArchiveError::PermissionSet {
+            fs::set_permissions(&out_path, fs::Permissions::from_mode(mode)).map_err(|source| {
+                ArchiveError::PermissionSet {
                     path: out_path.clone(),
                     source,
-                },
-            )?;
+                }
+            })?;
         }
 
-        let rel = out_path.strip_prefix(dest).map_err(|source| ArchiveError::PathStripPrefix {
-            path: out_path.clone(),
-            base: dest.to_path_buf(),
-            source,
-        })?;
+        let rel = out_path
+            .strip_prefix(dest)
+            .map_err(|source| ArchiveError::PathStripPrefix {
+                path: out_path.clone(),
+                base: dest.to_path_buf(),
+                source,
+            })?;
         info.files.push(rel.to_path_buf());
     }
 
@@ -168,10 +172,12 @@ pub fn replace_symlink_dir(src: &Path, dest: &Path) -> Result<(), ArchiveError> 
     }
     #[cfg(windows)]
     {
-        std::os::windows::fs::symlink_dir(src, dest).map_err(|source| ArchiveError::SymlinkCreate {
-            src: src.to_path_buf(),
-            dest: dest.to_path_buf(),
-            source,
+        std::os::windows::fs::symlink_dir(src, dest).map_err(|source| {
+            ArchiveError::SymlinkCreate {
+                src: src.to_path_buf(),
+                dest: dest.to_path_buf(),
+                source,
+            }
         })?;
     }
     Ok(())
