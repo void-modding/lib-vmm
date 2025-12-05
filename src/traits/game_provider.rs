@@ -27,6 +27,10 @@ pub enum GameInstallError {
     },
 }
 
+#[derive(Debug, thiserror::Error)]
+pub enum ModUninstallError {
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "specta", derive(specta::Type))]
 pub struct GameMetadata {
@@ -37,14 +41,24 @@ pub struct GameMetadata {
     pub provider_source: ProviderSource,
 }
 
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "specta", derive(specta::Type))]
+pub struct ModInstallationMeta {
+    pub provider_id: String,
+    pub mod_id: String,
+    pub display_name: String,
+    pub icon: GameIcon,
+    pub version: Option<String>,
+    pub depends_on: Vec<String>,
+    pub install_root: Option<String>,
+}
+
 #[async_trait]
 pub trait GameProvider: Provider + Send + Sync {
-    #[deprecated(since = "0.2.0", note = "Use id() instead")]
-    fn game_id(&self) -> &str {
-        self.id()
-    }
     fn mod_provider_id(&self) -> &str;
     fn metadata(&self) -> GameMetadata;
     fn get_external_id(&self) -> &str;
-    fn install_mod(&self, path: &Path) -> Result<(), GameInstallError>;
+    fn install_mod(&self, path: &Path) -> Result<ModInstallationMeta, GameInstallError>;
+    fn uninstall_mod(&self, mod_id: &str, root: Option<String>) -> Result<(), ModUninstallError>;
 }

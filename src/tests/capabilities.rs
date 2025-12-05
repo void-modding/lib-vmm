@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::{
     capabilities::{
         api_key_capability::{
-            ApiKeyCapability, ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey,
+            ApiKeyCapability, ApiKeyValidationError, ApiSubmitResponse, KeyAction, ApiKeyBehavior,
         },
         base::{Capability, CapabilityCastExt, CapabilityRef},
         builder::CapabilityBuilder,

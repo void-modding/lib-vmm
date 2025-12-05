@@ -4,3 +4,4 @@ pub mod builder;
 pub mod form;
 pub mod ids;
 pub mod macros;
+pub mod configurable_mods;

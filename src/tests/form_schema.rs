@@ -13,6 +13,7 @@ fn form_schema_with_all_field_types() {
                 placeholder: Some("Enter text".to_string()),
                 regex: None,
                 help: Some("A text field".to_string()),
+                value: None,
             },
             Field {
                 id: "password_field".to_string(),
@@ -21,6 +22,7 @@ fn form_schema_with_all_field_types() {
                 placeholder: Some("Enter password".to_string()),
                 regex: Some(r"^.{8,}$".to_string()),
                 help: Some("At least 8 characters".to_string()),
+                value: None,
             },
             Field {
                 id: "select_field".to_string(),
@@ -33,6 +35,7 @@ fn form_schema_with_all_field_types() {
                 placeholder: None,
                 regex: None,
                 help: Some("Choose one".to_string()),
+                value: None,
             },
             Field {
                 id: "info_field".to_string(),
@@ -41,6 +44,7 @@ fn form_schema_with_all_field_types() {
                 placeholder: None,
                 regex: None,
                 help: None,
+                value: None,
             },
         ],
     };
@@ -120,6 +124,7 @@ fn field_with_regex_validation() {
         placeholder: Some("user@example.com".to_string()),
         regex: Some(r"^[^\s@]+@[^\s@]+\.[^\s@]+$".to_string()),
         help: Some("Enter a valid email".to_string()),
+        value: None,
     };
 
     assert_eq!(field.id, "email");
@@ -138,6 +143,7 @@ fn field_serialization_roundtrip() {
         placeholder: Some("Enter username".to_string()),
         regex: Some(r"^\w{3,20}$".to_string()),
         help: Some("3-20 characters".to_string()),
+        value: None,
     };
 
     let json = serde_json::to_string(&field).expect("Should serialize");
@@ -163,6 +169,7 @@ fn form_schema_serialization_roundtrip() {
                 placeholder: Some("John Doe".to_string()),
                 regex: None,
                 help: None,
+                value: None,
             },
             Field {
                 id: "password".to_string(),
@@ -171,6 +178,7 @@ fn form_schema_serialization_roundtrip() {
                 placeholder: None,
                 regex: Some(r"^.{8,}$".to_string()),
                 help: Some("Minimum 8 characters".to_string()),
+                value: None,
             },
         ],
     };
@@ -210,6 +218,7 @@ fn field_clone() {
         placeholder: Some("placeholder".to_string()),
         regex: Some("regex".to_string()),
         help: Some("help".to_string()),
+        value: None,
     };
 
     let cloned = field.clone();
@@ -257,6 +266,7 @@ fn field_debug_output() {
         placeholder: None,
         regex: None,
         help: None,
+        value: None,
     };
 
     let debug_str = format!("{:?}", field);
@@ -305,6 +315,7 @@ fn field_with_complex_regex() {
         help: Some(
             "Password must contain uppercase, lowercase, number, and special character".to_string(),
         ),
+        value: None,
     };
 
     assert!(field.regex.is_some());

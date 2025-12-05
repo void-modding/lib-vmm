@@ -8,7 +8,7 @@ use async_trait::async_trait;
 
 use crate::{
     capabilities::{
-        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, RequiresApiKey},
+        api_key_capability::{ApiKeyValidationError, ApiSubmitResponse, KeyAction, ApiKeyBehavior},
         base::CapabilityRef,
         builder::{CapabilityBuilder, CapabilityError},
         form::{Field, FieldType, FormSchema},
@@ -66,7 +66,7 @@ impl Provider for DummyModProvider {
     }
 }
 
-impl RequiresApiKey for DummyModProvider {
+impl ApiKeyBehavior for DummyModProvider {
     fn on_provided(&self, value: &[ApiSubmitResponse]) -> Result<KeyAction, ApiKeyValidationError> {
         let first = value.first().ok_or(ApiKeyValidationError::Empty)?;
 

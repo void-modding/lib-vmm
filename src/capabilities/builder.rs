@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::capabilities::{
-    api_key_capability::{ApiKeyCapability, RequiresApiKey},
-    base::CapabilityRef,
+    api_key_capability::{ApiKeyBehavior, ApiKeyCapability},
+    base::CapabilityRef, configurable_mods::{ConfigurableModsBehavior, ConfigurableModsCapability},
 };
 
 #[derive(Error, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -40,10 +40,18 @@ impl<T> CapabilityBuilder<T> {
     }
 }
 
-impl<T: RequiresApiKey + Send + Sync + 'static> CapabilityBuilder<T> {
+impl<T: ApiKeyBehavior + Send + Sync + 'static> CapabilityBuilder<T> {
     pub fn api_key(mut self) -> Self {
         self.caps
             .push(Arc::new(ApiKeyCapability::new(self.weak.clone())) as CapabilityRef);
+        self
+    }
+}
+
+impl<T: ConfigurableModsBehavior + Send + Sync + 'static> CapabilityBuilder<T> {
+    pub fn configurable_mods(mut self) -> Self {
+        self.caps
+            .push(Arc::new(ConfigurableModsCapability::new(self.weak.clone())) as CapabilityRef);
         self
     }
 }

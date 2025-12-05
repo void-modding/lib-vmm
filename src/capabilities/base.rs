@@ -1,6 +1,6 @@
 use std::{any::Any, sync::Arc};
 
-use crate::capabilities::api_key_capability::RequiresApiKey;
+use crate::capabilities::{api_key_capability::ApiKeyBehavior, configurable_mods::ConfigurableModsBehavior};
 
 pub trait Capability: Any + Send + Sync {
     /// String discriminator. Prefer lowercase, dot-seperated names
@@ -10,7 +10,11 @@ pub trait Capability: Any + Send + Sync {
     /// Used for typed downcasting helpers.
     fn as_any(&self) -> &dyn Any;
 
-    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> {
+    fn as_requires_api_key(&self) -> Option<&dyn ApiKeyBehavior> {
+        None
+    }
+
+    fn as_configurable_mods(&self) -> Option<&dyn ConfigurableModsBehavior> {
         None
     }
 }

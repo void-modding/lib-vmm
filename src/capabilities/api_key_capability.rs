@@ -38,7 +38,7 @@ pub struct ApiSubmitResponse {
 }
 
 /// Behavior-only trait (no Capability)
-pub trait RequiresApiKey: Send + Sync {
+pub trait ApiKeyBehavior: Send + Sync {
     /// Called when the user submits a key.
     /// Return Err(message) to indicate validation failure.
     fn on_provided(&self, values: &[ApiSubmitResponse])
@@ -55,9 +55,9 @@ pub trait RequiresApiKey: Send + Sync {
 }
 
 /// Wrapper giving this behavior a concrete Capability
-pub struct ApiKeyCapability<T: RequiresApiKey + Send + Sync + 'static>(Weak<T>);
+pub struct ApiKeyCapability<T: ApiKeyBehavior + Send + Sync + 'static>(Weak<T>);
 
-impl<T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
+impl<T: ApiKeyBehavior + Send + Sync + 'static> ApiKeyCapability<T> {
     /// Creates a new `ApiKeyCapability`, that wraps a given weak refrence
     /// # Parameters
     ///  - `inner`: a `Weak<T>` pointing to the underlying provider implementing `RequiresApiKey`.
@@ -81,20 +81,20 @@ impl<T: RequiresApiKey + Send + Sync + 'static> ApiKeyCapability<T> {
     }
 }
 
-impl<T: RequiresApiKey + Send + Sync + 'static> Capability for ApiKeyCapability<T> {
+impl<T: ApiKeyBehavior + Send + Sync + 'static> Capability for ApiKeyCapability<T> {
     fn id(&self) -> &'static str {
         ids::REQUIRES_API_KEY
     }
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    fn as_requires_api_key(&self) -> Option<&dyn RequiresApiKey> {
+    fn as_requires_api_key(&self) -> Option<&dyn ApiKeyBehavior> {
         Some(self)
     }
 }
 
 /// Delegate back to underlying behvaior for ergonomics
-impl<T: RequiresApiKey + Send + Sync + 'static> RequiresApiKey for ApiKeyCapability<T> {
+impl<T: ApiKeyBehavior + Send + Sync + 'static> ApiKeyBehavior for ApiKeyCapability<T> {
     fn on_provided(
         &self,
         values: &[ApiSubmitResponse],
@@ -104,17 +104,20 @@ impl<T: RequiresApiKey + Send + Sync + 'static> RequiresApiKey for ApiKeyCapabil
             Err(_) => Err(ApiKeyValidationError::ProviderError),
         }
     }
+
     fn on_rejected(&self) {
         if let Ok(p) = self.inner() {
             p.on_rejected();
         }
     }
+
     fn needs_prompt(&self, existing_key: Option<&str>) -> bool {
         match self.inner() {
             Ok(p) => p.needs_prompt(existing_key),
             Err(_) => false,
         }
     }
+
     fn render(&self) -> Result<FormSchema, CapabilityError> {
         match self.inner() {
             Ok(p) => p.render(),
